@@ -1,21 +1,22 @@
 import Vue from 'vue'
 import App from './App.vue'
-
 Vue.config.productionTip = false
+// 导入基础样式
+import "./assets/base.css"
 
-//导入
-import router from './router/index.js'
-
-//导入全局默认基础样式
-import './assets/css/base.css'
-
-//导入饿了 uI
+// 导入饿了么UI
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-Vue.use(ElementUI)
+Vue.use(ElementUI);
+
+
+// 引入路由对象
+import router from './router/'
+
 
 new Vue({
-   //挂载路由
-   router,
   render: h => h(App),
+
+  // 5. 挂载到vue实例
+  router
 }).$mount('#app')

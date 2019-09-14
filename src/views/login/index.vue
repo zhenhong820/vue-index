@@ -2,7 +2,7 @@
   <div class="login">
     <div class="form-wrap">
       <div class="header">
-        <img src="./img/login_logo.png" alt />
+        <img src="./images/login_logo.png" alt />
       </div>
 
       <el-form :model="loginForm" :rules="rules" ref="loginForm" class="demo-ruleForm">
@@ -19,7 +19,7 @@
               <el-input v-model="loginForm.code" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="10" :offset="2">
-              <el-button>获取验证码</el-button>
+              <el-button @click="getCode" :disabled="isDisabled">{{ codeBtnTitle }}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -34,7 +34,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login-btn" @click="submitForm('loginForm')">登录</el-button>
+          <el-button type="primary" :loading="isLoading" class="login-btn" @click="submitForm('loginForm')">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -49,10 +49,20 @@ export default {
   name: "login",
   data() {
     return {
+
+      // 默认不需要加载中状态
+      isLoading:false,
+
+      // 默认文字叫 获取验证码
+      codeBtnTitle:'获取验证码',
+
+      // 默认不禁用
+      isDisabled:false,
+
       loginForm: {
-        mobile: "",
-        code: "",
-        agree: false
+        mobile: "13911111111",
+        code: "246810",
+        agree: true
       },
 
       // 规则对象
@@ -79,7 +89,11 @@ export default {
   },
 
   methods: {
+    // 登录的点击事件
     submitForm(formName) {
+      //按钮变加载中
+      this.isLoading = true;
+
       //formName传过来 'loginForm' 这个字符串
       //this.$refs[formName]相当于写的就是this.$refs['loginForm']
       // 这其实就是获取到这个表单dom对象
@@ -94,15 +108,17 @@ export default {
               this.loginForm
             )
             .then(res => {
-              // this.$message({
-              //   message: "登录成功！",
-              //   type: "success"
-              // });
+              
+              // 跳转之前保存数据
+              let jsonStr = JSON.stringify(res.data.data)
+              window.localStorage.setItem('userInfo',jsonStr)
+
               this.$message.success('登录成功！')
               this.$router.push("/home");
             })
             .catch(error => {
-             
+              // 把加载状态关闭
+              this.isLoading = false;
               this.$message.error('账号或密码错误！')
             });
         } else {
@@ -111,6 +127,43 @@ export default {
           return false;
         }
       });
+    },
+
+    // 获取验证码的点击事件
+    getCode(){
+
+      // 以前DOM写法先找到按钮，再设置disabled属性为true
+      // Vue的写法：直接去行内写一个 :disabled = "数据" 数据为true就禁用，数据为false就启用
+      this.isDisabled = true;
+
+      this.codeBtnTitle = "还有60秒"
+      let sec = 60;
+
+      // 记住：这里要用箭头函数，因为我们不需要改this的指向
+      // 如果你用普通function，那么里面的this是window
+      let timerID = setInterval(() => {
+
+          //开始计时
+          sec--
+          this.codeBtnTitle = `还有${sec}秒`
+
+          // 这代表59秒时自动填验证码
+          if(sec == 59){
+
+            this.loginForm.code = '246810'
+          }
+
+          if(sec == 0){
+              // 停止计时器
+              clearInterval(timerID)
+              // 文字复原
+              this.codeBtnTitle = "获取验证码"
+              // 不要禁用
+              this.isDisabled = false;
+          }
+
+      }, 1000);
+
     }
   }
 };
@@ -119,7 +172,7 @@ export default {
 <style lang="less" scoped>
 .login {
   height: 100%;
-  background: url("./img/login_bg.jpg") no-repeat center / cover;
+  background: url("./images/login_bg.jpg") no-repeat center / cover;
 
   display: flex;
   // 主轴居中
