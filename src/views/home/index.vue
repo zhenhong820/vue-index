@@ -180,7 +180,7 @@ export default {
       height: 100%;
 
       .my-main-header {
-        background-color: hotpink;
+        background-color: skyblue;
 
         display: flex;
         justify-content: space-between;

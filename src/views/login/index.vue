@@ -56,11 +56,11 @@ export default {
       // 默认文字叫 获取验证码
       codeBtnTitle:'获取验证码',
 
-      // 默认不禁用
+      // 默认不禁用  13911111111  18801185985
       isDisabled:false,
 
       loginForm: {
-        mobile: "13911111111",
+        mobile: "18801185985",
         code: "246810",
         agree: true
       },
